@@ -27,9 +27,27 @@
             <div class="row row-cols-1 row-cols-sm-auto" id="book-columns-root"></div>
         </form>
     </div>
+    
+    <div id="progressModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Пожалуйста, подождите</h5>
+                </div>
+                <div class="modal-body d-flex align-items-center gap-3">
+                    <span class="spinner-border text-primary" role="status"></span>
+                    <span id="progressStatus"></span>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-danger" id="cancelExport" type="button" data-bs-dismiss="modal"
+                        value="Отмена" />
+                </div>
+            </div>
+        </div>
+    </div>
     <?!= include('render-script'); ?>
-    <?!= include('export-script'); ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <?!= include('export-script'); ?>
 </body>
 
 </html>
