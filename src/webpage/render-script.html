@@ -1,6 +1,6 @@
 <script>
     const PAGENAME_DATA = {
-        legend: 'Выберите страницу',
+        legend: 'Страница',
         type: 'radio',
         name: 'pagename',
         items: [
@@ -12,7 +12,7 @@
     }
 
     const FIELDS_DATA = {
-        legend: 'Выберите колонки',
+        legend: 'Колонки',
         type: 'checkbox',
         name: 'includeColumns',
         items: [
@@ -38,7 +38,7 @@
     }
 
     const FILE_EXTENSTION_DATA = {
-        legend: 'Выберите формат файла',
+        legend: 'Формат файла',
         type: 'radio',
         name: 'fileExtention',
         items: [
@@ -53,20 +53,39 @@
 
     function renderFieldsetContent(id, data) {
         let fragment = document.createDocumentFragment()
-        let legend = document.createElement('legend')
-        legend.innerText = data.legend
-        fragment.appendChild(legend)
-        data.items.forEach(item => {
+
+        let h5 = document.createElement('h5')
+        h5.className = 'col col-sm-12'
+        h5.innerText = data.legend
+        fragment.appendChild(h5)
+
+        let col
+        data.items.forEach((item, index) => {
+            if (index % 6 == 0) {
+                col = document.createElement('div')
+                col.className = 'col'
+                fragment.appendChild(col)
+            }
+
             let input = document.createElement('input')
+            input.className = 'form-check-input'
             input.type = data.type
             input.name = data.name
             input.value = item.value
             input.checked = item.checked
+
             let label = document.createElement('label')
+            label.className = 'form-check-label'
             label.appendChild(input)
             label.appendChild(document.createTextNode(item.text))
-            fragment.appendChild(label)
+
+            let div = document.createElement('div')
+            div.className = 'form-check'
+            div.appendChild(label)
+
+            col.appendChild(div)
         })
+
         let root = document.getElementById(id, data)
         root.appendChild(fragment)
     }

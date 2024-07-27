@@ -1,27 +1,10 @@
 <style>
-    #pagename-root,
-    #file-extension-root {
-        display: flex;
-        flex-direction: column;
-    }
-
-    #book-columns-root {
-        display: grid;
-        grid-auto-flow: column;
-        grid-template-rows: repeat(6, minmax(0, 1fr));
-        gap: 0.75rem;
-    }
-
-    fieldset {
-        width: max-content;
-    }
-
-    input,
+    input:not([type=text]),
     label {
-        cursor: pointer;
+      cursor: pointer;
     }
-
-    .space-y-4>*+* {
-        margin-top: 1rem;
+  
+    .space-y-3>*+* {
+      margin-top: 1rem;
     }
-</style>
+  </style>
