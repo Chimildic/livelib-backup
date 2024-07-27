@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <?!= include('stylesheet'); ?>
+</head>
+
+<body>
+    <form class="space-y-4">
+        <input type="text" name="username" placeholder="Имя пользователя" />
+        <fieldset id="pagename-root"></fieldset>
+        <fieldset id="book-columns-root"></fieldset>
+        <fieldset id="file-extension-root"></fieldset>
+        <input type="submit" value="Скачать" />
+    </form>
+    <?!= include('render-script'); ?>
+    <?!= include('export-script'); ?>
+</body>
+
+</html>

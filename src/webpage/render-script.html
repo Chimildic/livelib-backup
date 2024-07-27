@@ -1,0 +1,73 @@
+<script>
+    const PAGENAME_DATA = {
+        legend: 'Выберите страницу',
+        type: 'radio',
+        name: 'pagename',
+        items: [
+            { value: 'read', text: 'Прочитал', checked: true },
+            { value: 'unread', text: 'Не дочитал' },
+            { value: 'reading', text: 'Читаю сейчас' },
+            { value: 'wish', text: 'Хочу прочитать' },
+        ]
+    }
+
+    const FIELDS_DATA = {
+        legend: 'Выберите колонки',
+        type: 'checkbox',
+        name: 'includeColumns',
+        items: [
+            { value: 'title', text: 'Название', checked: true },
+            { value: 'authors', text: 'Автор', checked: true },
+            { value: 'readDate', text: 'Дата прочтения', checked: true },
+            { value: 'ratingUser', text: 'Моя оценка', checked: true },
+            { value: 'ratingOverall', text: 'Общая оценка', checked: false },
+            { value: 'isbn', text: 'ISBN', checked: true },
+            { value: 'genres', text: 'Жанры', checked: false },
+            { value: 'publishers', text: 'Издатель', checked: false },
+            { value: 'year', text: 'Дата издания', checked: false },
+            { value: 'language', text: 'Язык', checked: false },
+            { value: 'series', text: 'Серия', checked: false },
+            { value: 'statLoved', text: 'Количество лайков', checked: false },
+            { value: 'statReviews', text: 'Количество рецензий', checked: false },
+            { value: 'statQuotes', text: 'Количество цитат', checked: false },
+            { value: 'statRead', text: 'Количество прочтений', checked: false },
+            { value: 'bookHref', text: 'Ссылка на книгу', checked: false },
+            { value: 'coverHref', text: 'Ссылка на обложку', checked: false },
+            { value: 'annotation', text: 'Аннотация', checked: false },
+        ]
+    }
+
+    const FILE_EXTENSTION_DATA = {
+        legend: 'Выберите формат файла',
+        type: 'radio',
+        name: 'fileExtention',
+        items: [
+            { value: 'csv', text: 'csv', checked: true },
+            { value: 'json', text: 'json' },
+        ]
+    }
+
+    renderFieldsetContent('pagename-root', PAGENAME_DATA)
+    renderFieldsetContent('book-columns-root', FIELDS_DATA)
+    renderFieldsetContent('file-extension-root', FILE_EXTENSTION_DATA)
+
+    function renderFieldsetContent(id, data) {
+        let fragment = document.createDocumentFragment()
+        let legend = document.createElement('legend')
+        legend.innerText = data.legend
+        fragment.appendChild(legend)
+        data.items.forEach(item => {
+            let input = document.createElement('input')
+            input.type = data.type
+            input.name = data.name
+            input.value = item.value
+            input.checked = item.checked
+            let label = document.createElement('label')
+            label.appendChild(input)
+            label.appendChild(document.createTextNode(item.text))
+            fragment.appendChild(label)
+        })
+        let root = document.getElementById(id, data)
+        root.appendChild(fragment)
+    }
+</script>
