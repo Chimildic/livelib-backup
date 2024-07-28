@@ -10,6 +10,9 @@
         iframe {
             width: 100%;
             height: 100vh;
+            display: none;
+            border: 0;
+            background-color: var(--bs-body-bg) !important;
         }
 
         @media (min-width: 576px) { 
@@ -28,10 +31,20 @@
                 <p class="lead">Сервис по экспорту списка книг</p>
             </div>
         </div>
+        <div class="row mt-4" id="spinner-root" >
+            <div class="col d-flex align-items-center gap-3">
+                <span class="spinner-border text-primary" role="status"></span>
+                <span class="lead">Загрузка</span>
+            </div>
+        </div>
     </div>
-
-    <iframe frameBorder="0" src="https://script.google.com/macros/s/AKfycbz99NP1EXi_2sXT7GoQp1exM_MvpsFtL1YYfaNXVz1q8XPrrR4dnIqfLdkHn9muK35XsA/exec"></iframe>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <iframe onload="onIframeLoaded(this)" src="https://script.google.com/macros/s/AKfycbz99NP1EXi_2sXT7GoQp1exM_MvpsFtL1YYfaNXVz1q8XPrrR4dnIqfLdkHn9muK35XsA/exec"></iframe>
+    <script>
+        function onIframeLoaded(iframeElement) {
+            document.getElementById('spinner-root').style.display = 'none'
+            iframeElement.style.display = 'initial'
+        }
+    </script>
 </body>
 
 </html>
