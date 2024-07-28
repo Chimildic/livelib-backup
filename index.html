@@ -15,9 +15,9 @@
             background-color: var(--bs-body-bg) !important;
         }
 
-        @media (min-width: 576px) { 
+        @media (min-width: 576px) {
             iframe {
-                height: 80vh;
+                height: 65vh;
             }
         }
     </style>
@@ -31,7 +31,7 @@
                 <p class="lead">Сервис по экспорту списка книг</p>
             </div>
         </div>
-        <div class="row mt-4" id="spinner-root" >
+        <div class="row mt-4" id="spinner-root">
             <div class="col d-flex align-items-center gap-3">
                 <span class="spinner-border text-primary" role="status"></span>
                 <span class="lead">Загрузка</span>
@@ -39,10 +39,36 @@
         </div>
     </div>
     <iframe onload="onIframeLoaded(this)" src="https://script.google.com/macros/s/AKfycbz99NP1EXi_2sXT7GoQp1exM_MvpsFtL1YYfaNXVz1q8XPrrR4dnIqfLdkHn9muK35XsA/exec"></iframe>
+    <div class="container">
+        <footer class="py-3 my-4">
+            <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-muted" href="https://yoomoney.ru/to/410014208620686" target="_blank" >❤️ Донат</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-muted" href="https://docs.google.com/forms/d/e/1FAIpQLSdZkj_KXZ-StXvkMigkZuPC8RUCc99MdW5i75RkCzddnqHgDQ/viewform" target="_blank">Обратная связь</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-muted" href="https://github.com/Chimildic/livelib-backup" target="_blank">Исходный код</a>
+                </li>
+            </ul>
+            <a class="text-center nav-link px-2 text-muted" id="copyright" href="https://t.me/p_chimildic" target="_blank"></a>
+        </footer>
+    </div>
     <script>
+        setCopyright()
+
         function onIframeLoaded(iframeElement) {
             document.getElementById('spinner-root').style.display = 'none'
             iframeElement.style.display = 'initial'
+        }
+
+        function setCopyright() {
+            let year = new Date().getFullYear()
+            if (year != 2024) {
+                year = `2024 - ${year}`
+            }
+            document.getElementById('copyright').innerText = `${year} © Chimildic`
         }
     </script>
 </body>
