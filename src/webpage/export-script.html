@@ -26,13 +26,16 @@
                 .withFailureHandler(onFailure)
             ['getBiglist'](userObject.args)
         } catch (error) {
-            showErrorModal(`Не удалось отправить запрос на сервер: ${error.message}`)
-            throw error.message
+            showErrorModal(`Не удалось отправить запрос на сервер.\n${error.message}`)
         }
     }
 
     function onSuccess(response, userObject) {
         throwIfCancelByUser()
+        if (response.isError) {
+            showErrorModal(response.text)
+            return
+        }
         userObject.bookArray = userObject.bookArray || []
         userObject.bookArray.push(...response.bookArray)
         if (response.isLastPage) {
@@ -40,19 +43,23 @@
             userObject.totalPages = response.pageNumber
             onFinish(userObject)
         } else {
-            setRandomStatusText(STATUS.isNotLastPage)
+            setStatusText(STATUS.isNotLastPage)
             userObject.args.pageNumber = response.pageNumber + 1
             getBiglist(userObject)
         }
     }
 
     function onFailure(error, userObject) {
-        console.log('Ошибка в getBiglist.\nСообщение:', error.message, '\nuserObject:', userObject)
-        showErrorModal(`Процесс получения данных с Livelib прерван ошибкой: ${error.message}`)
+        showErrorModal(`Процесс получения данных с Livelib прерван ошибкой.\n${error.message}`)
     }
 
     function onFinish(userObject) {
-        setRandomStatusText(STATUS.creatingFile)
+        if (userObject.bookArray.length == 0) {
+            showResultModal('У пользователя нет книжек на выбранной странице')
+            return
+        }
+
+        setStatusText(STATUS.creatingFile)
         let filename = createFilename(userObject.formData)
         if (userObject.formData.fileExtention == 'json') {
             download(filename, 'application/json', JSON.stringify(userObject.bookArray))

@@ -53,35 +53,39 @@
 
   const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal'))
 
-  function showProgressModal(statusArray) {
+  function showProgressModal(status) {
     document.getElementById('modalTitle').innerText = '⏱️ Пожалуйста, подождите'
     document.getElementById('closeModalButton').classList.add('d-none')
     document.getElementById('cancelExportButton').classList.remove('d-none')
     document.getElementById('spinner').classList.remove('d-none')
-    setRandomStatusText(statusArray)
+    setStatusText(status)
     modal.show()
   }
 
-  function showResultModal(statusArray) {
+  function showResultModal(status) {
     document.getElementById('modalTitle').innerText = '✅ Готово'
     document.getElementById('closeModalButton').classList.remove('d-none')
     document.getElementById('cancelExportButton').classList.add('d-none')
     document.getElementById('spinner').classList.add('d-none')
-    setRandomStatusText(statusArray)
+    setStatusText(status)
     modal.show()
   }
 
-  function showErrorModal(text) {
+  function showErrorModal(status) {
     document.getElementById('modalTitle').innerText = '❌ Ошибка'
     document.getElementById('closeModalButton').classList.remove('d-none')
     document.getElementById('cancelExportButton').classList.add('d-none')
     document.getElementById('spinner').classList.add('d-none')
-    document.getElementById('statusText').innerText = text
+    setStatusText(status)
     modal.show()
   }
 
-  function setRandomStatusText(array) {
-    let index = Math.floor(Math.random() * array.length)
-    document.getElementById('statusText').innerText = array[index]
+  function setStatusText(status) {
+    let text = Array.isArray(status) ? status[randomInt(status.length)] : status
+    document.getElementById('statusText').innerText = text
+  }
+
+  function randomInt(max) {
+    return Math.floor(Math.random() * max)
   }
 </script>
