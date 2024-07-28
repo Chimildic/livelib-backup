@@ -51,30 +51,45 @@ const STATUS = {
 }
 
 const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal'))
+const modalTitle = document.getElementById('modalTitle')
+const donateModalButton = document.getElementById('donateModalButton')
+const closeModalButton = document.getElementById('closeModalButton')
+const cancelExportButton = document.getElementById('cancelExportButton')
+const spinner = document.getElementById('spinnerStatus')
+
+donateModalButton.addEventListener('click', onDonateButtonClick)
+
+function onDonateButtonClick() {
+    window.open('https://yoomoney.ru/to/410014208620686', '_blank')
+    modal.hide()
+}
 
 function showProgressModal(status) {
-    document.getElementById('modalTitle').innerText = '⏱️ Пожалуйста, подождите'
-    document.getElementById('closeModalButton').classList.add('d-none')
-    document.getElementById('cancelExportButton').classList.remove('d-none')
-    document.getElementById('spinner').classList.remove('d-none')
+    modalTitle.innerText = '⏱️ Пожалуйста, подождите'
+    donateModalButton.classList.add('d-none')
+    closeModalButton.classList.add('d-none')
+    cancelExportButton.classList.remove('d-none')
+    spinner.classList.remove('d-none')
     setStatusText(status)
     modal.show()
 }
 
 function showResultModal(status) {
-    document.getElementById('modalTitle').innerText = '✅ Готово'
-    document.getElementById('closeModalButton').classList.remove('d-none')
-    document.getElementById('cancelExportButton').classList.add('d-none')
-    document.getElementById('spinner').classList.add('d-none')
+    modalTitle.innerText = '✅ Готово'
+    donateModalButton.classList.remove('d-none')
+    closeModalButton.classList.remove('d-none')
+    cancelExportButton.classList.add('d-none')
+    spinner.classList.add('d-none')
     setStatusText(status)
     modal.show()
 }
 
 function showErrorModal(status) {
-    document.getElementById('modalTitle').innerText = '❌ Ошибка'
-    document.getElementById('closeModalButton').classList.remove('d-none')
-    document.getElementById('cancelExportButton').classList.add('d-none')
-    document.getElementById('spinner').classList.add('d-none')
+    modalTitle.innerText = '❌ Ошибка'
+    donateModalButton.classList.add('d-none')
+    closeModalButton.classList.remove('d-none')
+    cancelExportButton.classList.add('d-none')
+    spinner.classList.add('d-none')
     setStatusText(status)
     modal.show()
 }

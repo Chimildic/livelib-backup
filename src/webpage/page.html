@@ -33,12 +33,13 @@
                     <h5 class="modal-title" id="modalTitle"></h5>
                 </div>
                 <div class="modal-body d-flex align-items-center gap-3">
-                    <span class="spinner-border text-primary" id="spinner" role="status"></span>
+                    <span class="spinner-border text-primary" id="spinnerStatus" role="status"></span>
                     <span id="statusText"></span>
                 </div>
                 <div class="modal-footer">
-                    <input class="btn btn-primary" id="closeModalButton" type="button" data-bs-dismiss="modal" value="Закрыть" />
-                    <input class="btn btn-danger" id="cancelExportButton" type="button" data-bs-dismiss="modal" value="Отмена" />
+                    <input class="btn btn-success d-none" id="donateModalButton" type="button" value="Поблагодарить разработчика" />
+                    <input class="btn btn-secondary d-none" id="closeModalButton" type="button" data-bs-dismiss="modal" value="Закрыть" />
+                    <input class="btn btn-danger d-none" id="cancelExportButton" type="button" data-bs-dismiss="modal" value="Отмена" />
                 </div>
             </div>
         </div>
