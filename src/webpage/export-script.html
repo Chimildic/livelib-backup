@@ -1,46 +1,6 @@
 <script>
-    const STATUS = {
-        starting: [
-            'Ожидаю ответ сервера',
-            'Вперед, в бездну!',
-            'Первый шаг, а там посмотрим...',
-            'Поехали!',
-            'Хьюстон, у нас контакт',
-            'Глубоко вдохнули и... парсим!',
-            'Глаза боятся, а парсер делает',
-            'Маховик запущен, назад пути нет',
-            'Использую магию вне Хогвартса, никому не рассказывай',
-            'Даже карта Мародеров не собирет столько информации',
-            'Надеюсь, этот парсинг не приведет нас в Тайную Комнату',
-            'Ну-с, – бодро сказал он, – начнем пожалуй',
-            'Да будет бал, да начнутся танцы!',
-            'Это будет леген... постой, подожди-подожди... дарно! Процесс пошел',
-            'Даже тысячемильное путешествие начинается с... запуска скрипта. Ладно, метафора так себе, но суть ясна',
-            'Заяц, Волк, Заяц, Волк',
-            'Работает? Не знаю, но кнопка нажата',
-            'А пока покормите котейку. Ну, или себя?',
-            'Вы знали что Алиса умеет озвучивать книги? На телефоне тоже',
-        ],
-        isNotLastPage: [
-            'Продолжаю собирать книжки',
-            'Кажется, кто-то ограбил библиотеку?',
-            'Вы точно всё это читали, или просто хвастаетесь?',
-            'Вы, наверное, тот самый книжный червь, о котором все говорят?',
-            'Вам срочно нужен книжный шкаф побольше, а лучше два!',
-            'Я не завис (наверное)',
-            'while (true) read()',
-        ],
-        creatingFile: [
-            'Записываю данные в файл',
-            'Строка за строкой, файл скоро будет твой',
-            'Создать файл? Легче лёгкого, когда у тебя есть куча свободного времени и марсианская пыль на процессоре.',
-        ]
-    }
-
-    const progressModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('progressModal'))
-
     let isExportCanceled = false
-    document.getElementById('cancelExport').addEventListener('click', () => (isExportCanceled = true))
+    document.getElementById('cancelExportButton').addEventListener('click', () => (isExportCanceled = true))
     document.querySelector('form').addEventListener('submit', onFormSubmit)
 
     function onFormSubmit(event) {
@@ -50,9 +10,7 @@
         if (formDataObject.username.length == 0) {
             return
         }
-
-        setRandomProgressStatus(STATUS.starting)
-        progressModal.show()
+        showProgressModal(STATUS.starting)
 
         getBiglist({
             args: { pagename: formDataObject.pagename, username: formDataObject.username, includeColumns: formDataObject.includeColumns },
@@ -68,7 +26,8 @@
                 .withFailureHandler(onFailure)
             ['getBiglist'](userObject.args)
         } catch (error) {
-            throw error.message;
+            showErrorModal(`Не удалось отправить запрос на сервер: ${error.message}`)
+            throw error.message
         }
     }
 
@@ -81,7 +40,7 @@
             userObject.totalPages = response.pageNumber
             onFinish(userObject)
         } else {
-            setRandomProgressStatus(STATUS.isNotLastPage)
+            setRandomStatusText(STATUS.isNotLastPage)
             userObject.args.pageNumber = response.pageNumber + 1
             getBiglist(userObject)
         }
@@ -89,18 +48,18 @@
 
     function onFailure(error, userObject) {
         console.log('Ошибка в getBiglist.\nСообщение:', error.message, '\nuserObject:', userObject)
+        showErrorModal(`Процесс получения данных с Livelib прерван ошибкой: ${error.message}`)
     }
 
     function onFinish(userObject) {
-        setRandomProgressStatus(STATUS.creatingFile)
+        setRandomStatusText(STATUS.creatingFile)
         let filename = createFilename(userObject.formData)
         if (userObject.formData.fileExtention == 'json') {
             download(filename, 'application/json', JSON.stringify(userObject.bookArray))
         } else if (userObject.formData.fileExtention == 'csv') {
             download(filename, 'text/csv', fromBookArrayToCsv(userObject))
         }
-        progressModal.hide()
-
+        showResultModal(STATUS.result)
     }
 
     function download(filename, mimeType, content) {
@@ -165,11 +124,6 @@
         }
 
         return [header, lines].flat().join('\n')
-    }
-
-    function setRandomProgressStatus(array) {
-        let index = Math.floor(Math.random() * array.length)
-        document.getElementById('progressStatus').innerText = array[index]
     }
 
     function throwIfCancelByUser() {
