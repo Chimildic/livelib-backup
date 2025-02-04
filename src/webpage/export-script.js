@@ -120,8 +120,9 @@ function fromBookArrayToCsv(userObject, separator = ';') {
                 line.push(book.details[column])
             } else if (column == 'genres') {
                 line.push(book.genres.map(item => item.name).join(','))
-            } else if (['loved', 'reviews', 'quotes', 'read'].includes(column)) {
-                line.push(book.stats[column])
+            } else if (['statLoved', 'statReviews', 'statQuotes', 'statRead'].includes(column)) {
+                let key = column.split('stat')[1].toLowerCase()
+                line.push(book.stats[key])
             } else {
                 line.push(book[column])
             }
