@@ -101,7 +101,7 @@ function fromFormDataToObject(formData) {
     }, {})
 }
 
-function fromBookArrayToCsv(userObject, separator = ';') {
+function fromBookArrayToCsv(userObject, separator = ';', replacement = '.') {
     let columnTitles = FIELDS_DATA.items.reduce((acc, item) => (acc[item.value] = item.text, acc), {})
     let header = userObject.formData.includeColumns.map(item => columnTitles[item]).join(separator)
     let lines = []
@@ -127,7 +127,12 @@ function fromBookArrayToCsv(userObject, separator = ';') {
                 line.push(book[column])
             }
         })
-        lines.push(line.join(separator))
+        lines.push(line.map(l => {
+          if (typeof l == 'string') {
+            return l.replaceAll(separator, replacement).replace(/[\r\n]/g, ' ')
+          }
+          return l
+        }).join(separator))
     }
 
     return [header, lines].flat().join('\n')
