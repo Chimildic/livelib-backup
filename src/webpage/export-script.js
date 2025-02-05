@@ -60,10 +60,12 @@ function onFinish(userObject) {
 
     setStatusText(STATUS.creatingFile)
     let filename = createFilename(userObject.formData)
-    if (userObject.formData.fileExtention == 'json') {
+    if ('json' == userObject.formData.fileExtention) {
         download(filename, 'application/json', JSON.stringify(userObject.bookArray))
-    } else if (userObject.formData.fileExtention == 'csv') {
-        download(filename, 'text/csv', fromBookArrayToCsv(userObject))
+    } else if ('csv' == userObject.formData.fileExtention) {
+        download(filename, 'text/csv', fromBookArrayToCsv(userObject, ';', '.', false))
+    } else if ('csv_goodreads' == userObject.formData.fileExtention) {
+        download(filename, 'text/csv', fromBookArrayToCsv(userObject, ',', ' ', true))
     }
     showResultModal(STATUS.result)
 }
@@ -84,7 +86,8 @@ function download(filename, mimeType, content) {
 }
 
 function createFilename(formData) {
-    return `livelib-${formData.username.toLowerCase()}-${formData.pagename}-${new Date().toLocaleDateString()}.${formData.fileExtention}`
+    let fileExtention = formData.fileExtention.split('_')[0]
+    return `livelib-${formData.username.toLowerCase()}-${formData.pagename}-${new Date().toLocaleDateString()}.${fileExtention}`
 }
 
 function fromFormDataToObject(formData) {
@@ -101,41 +104,78 @@ function fromFormDataToObject(formData) {
     }, {})
 }
 
-function fromBookArrayToCsv(userObject, separator = ';', replacement = '.') {
-    let columnTitles = FIELDS_DATA.items.reduce((acc, item) => (acc[item.value] = item.text, acc), {})
-    let header = userObject.formData.includeColumns.map(item => columnTitles[item]).join(separator)
+function fromBookArrayToCsv(userObject, separator, replacement, isGoodReadsFormat = false) {
     let lines = []
-    for (let i = 0; i < userObject.bookArray.length; i++) {
+    userObject.bookArray.forEach(book => {
         throwIfCancelByUser()
-        let book = userObject.bookArray[i]
-        let line = []
-        userObject.formData.includeColumns.forEach(column => {
-            if (column == 'authors') {
-                line.push(book.authors.map(a => a.name).join(','))
-            } else if (column == 'ratingUser') {
-                line.push(book.rating.user)
-            } else if (column == 'ratingOverall') {
-                line.push(book.rating.overall)
-            } else if (['isbn', 'year', 'language', 'series', 'publishers'].includes(column)) {
-                line.push(book.details[column])
-            } else if (column == 'genres') {
-                line.push(book.genres.map(item => item.name).join(','))
-            } else if (['statLoved', 'statReviews', 'statQuotes', 'statRead'].includes(column)) {
-                let key = column.split('stat')[1].toLowerCase()
-                line.push(book.stats[key])
-            } else {
-                line.push(book[column])
-            }
+        getIsbnList(book).forEach(isbn => {
+            let line = userObject.formData.includeColumns.map(column => getColumnValue(book, column, isbn))
+                .map(value => formatValue(value, separator, replacement))
+                .join(separator)
+            lines.push(line)
         })
-        lines.push(line.map(l => {
-          if (typeof l == 'string') {
-            return l.replaceAll(separator, replacement).replace(/[\r\n]/g, ' ')
-          }
-          return l
-        }).join(separator))
+    })
+
+    let header = createHeader()
+    if (isGoodReadsFormat) {
+        let pageName = separator + PAGENAME_DATA.items.find(i => i.value === userObject.formData.pagename)?.grText
+        lines.forEach((line, index) => lines[index] += pageName)
     }
 
-    return [header, lines].flat().join('\n')
+    return [header, ...lines].join('\n')
+
+
+    function getIsbnList(book) {
+        let list = []
+        let isbnString = book.details?.isbn || ''
+        if (isGoodReadsFormat) {
+            list = isbnString.split(',').filter(isbn => isbn.trim() !== '')
+        }
+        return list.length == 0 ? [isbnString] : list
+    }
+
+    function getColumnValue(book, column, isbn) {
+        switch (column) {
+            case 'authors':
+                return book.authors.map(a => a.name).join(',')
+            case 'ratingUser':
+                return book.rating.user
+            case 'ratingOverall':
+                return book.rating.overall
+            case 'isbn':
+                return isbn
+            case 'genres':
+                return book.genres.map(item => item.name).join(',')
+            case 'statLoved':
+            case 'statReviews':
+            case 'statQuotes':
+            case 'statRead':
+                return book.stats[column.split('stat')[1].toLowerCase()]
+            case 'year':
+            case 'language':
+            case 'series':
+            case 'publishers':
+                return book.details[column]
+            default:
+                return book[column]
+        }
+    }
+
+    function formatValue(value, separator, replacement) {
+        return typeof value === 'string'
+            ? value.replaceAll(separator, replacement).replace(/[\r\n]/g, ' ').trim()
+            : value
+    }
+
+    function createHeader() {
+        let columnTitles = FIELDS_DATA.items.reduce((acc, item) => {
+            acc[item.value] = isGoodReadsFormat ? (item.grText || item.text) : item.text
+            return acc
+        }, {})
+        let header = userObject.formData.includeColumns.map(item => columnTitles[item]).join(separator)
+        if (isGoodReadsFormat) header += `${separator}Shelves`
+        return header
+    }
 }
 
 function throwIfCancelByUser() {

@@ -3,10 +3,10 @@ const PAGENAME_DATA = {
     type: 'radio',
     name: 'pagename',
     items: [
-        { value: 'read', text: 'Прочитал', checked: true },
-        { value: 'unread', text: 'Не дочитал' },
-        { value: 'reading', text: 'Читаю сейчас' },
-        { value: 'wish', text: 'Хочу прочитать' },
+        { value: 'read', grText: 'read', text: 'Прочитал', checked: true },
+        { value: 'unread', grText: 'unread', text: 'Не дочитал' },
+        { value: 'reading', grText: 'currently-reading', text: 'Читаю сейчас' },
+        { value: 'wish', grText: 'to-read', text: 'Хочу прочитать' },
     ]
 }
 
@@ -15,15 +15,15 @@ const FIELDS_DATA = {
     type: 'checkbox',
     name: 'includeColumns',
     items: [
-        { value: 'title', text: 'Название', checked: true },
-        { value: 'authors', text: 'Автор', checked: true },
-        { value: 'readDate', text: 'Дата прочтения', checked: true },
-        { value: 'ratingUser', text: 'Моя оценка', checked: true },
-        { value: 'ratingOverall', text: 'Общая оценка', checked: false },
-        { value: 'isbn', text: 'ISBN', checked: true },
+        { value: 'title', grText: 'Title', text: 'Название', checked: true },
+        { value: 'authors', grText: 'Author', text: 'Автор', checked: true },
+        { value: 'readDate', grText: 'Date Read', text: 'Дата прочтения', checked: true },
+        { value: 'ratingUser', grText: 'My Rating', text: 'Моя оценка', checked: true },
+        { value: 'ratingOverall', grText: 'Average Rating', text: 'Общая оценка', checked: false },
+        { value: 'isbn', grText: 'ISBN', text: 'ISBN', checked: true },
         { value: 'genres', text: 'Жанры', checked: false },
-        { value: 'publishers', text: 'Издатель', checked: false },
-        { value: 'year', text: 'Дата издания', checked: false },
+        { value: 'publishers', grText: 'Publisher', text: 'Издатель', checked: false },
+        { value: 'year', grText: 'Year Published', text: 'Дата издания', checked: false },
         { value: 'language', text: 'Язык', checked: false },
         { value: 'series', text: 'Серия', checked: false },
         { value: 'statLoved', text: 'Количество лайков', checked: false },
@@ -43,6 +43,7 @@ const FILE_EXTENSTION_DATA = {
     items: [
         { value: 'csv', text: 'csv', checked: true },
         { value: 'json', text: 'json' },
+        { value: 'csv_goodreads', text: 'для импорта в goodreads' }
     ]
 }
 
