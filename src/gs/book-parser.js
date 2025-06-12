@@ -8,13 +8,13 @@ const BookParser = (function () {
         let columns = includeColumns.reduce((acc, item) => (acc[item] = true, acc), {})
 
         $._root.children.forEach(node => {
-            if (node.attribs == undefined || node.attribs.class == undefined) {
-                return
-            } else if (node.attribs.class.includes('brow-h2')) {
-                currentDate = $('h2', node).text()
-            } else if (node.attribs.class.includes('book-item-manage')) {
+            if (node.attribs == undefined) {
+              return
+            } else if (node.attribs.class?.includes('book-item-manage') || node.attribs.id?.includes('my-selection-book-list')) {
                 let book = parseToBook($, node, currentDate, columns)
                 bookArray.push(book)
+            } else if (node.attribs.class.includes('brow-h2')) {
+                currentDate = $('h2', node).text()
             }
         })
 
@@ -28,8 +28,15 @@ const BookParser = (function () {
         columns.title && (book.title = bookTitleNode.firstChild.nodeValue)
         columns.bookHref && (book.bookHref = BASE_URL + bookTitleNode.attribs.href)
         columns.coverHref && (book.coverHref = $('img', node)[0].attribs.src)
-        columns.annotation && (book.annotation = $('[id*="full"]', node).text().split('\n').map(line => line.trim()).join('\n'))
         columns.readDate && currentDate && (book.readDate = currentDate)
+        
+        if (columns.annotation) {
+          let rawAnnotation = $('[id*="full"]', node).text()
+          if (rawAnnotation.length == 0) {
+            rawAnnotation = $('div[class*="brow-description"]', node).text()
+          }
+          book.annotation = rawAnnotation.split('\n').map(line => line.trim()).join('\n')
+        }
 
         if (columns.ratingOverall || columns.ratingUser) {
             book.rating = {}

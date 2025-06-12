@@ -8,7 +8,7 @@ const LivelibClient = (function () {
      * 
      * @typedef {object} BiglistArgs
      * @property {string} pagename - Название страницы: read, unread, reading, wish.
-     * @property {string} username - Имя пользователя, для которого запрашивается страница.
+     * @property {string} text - Имя пользователя или ссылка на подборку.
      * @property {number} pageNumber - Порядковый номер страницы.
      * @property {number} perPageCount - Количесто книг на одной странице.
      * 
@@ -28,10 +28,18 @@ const LivelibClient = (function () {
             is_prev: 'false'
         }
 
-        let response = new RequestBuilder()
-            .withPath(`/reader/${args.username}/${args.pagename}/listview/biglist`)
+        let response
+        if (args.text.startsWith('https://')) {
+          response = new RequestBuilder()
+            .withHost(`${args.text}/listview/biglist`)
             .withBody(body)
             .post()
+        } else {
+          response = new RequestBuilder()
+            .withPath(`/reader/${args.text}/${args.pagename}/listview/biglist`)
+            .withBody(body)
+            .post()
+        }
 
         response.page_no = body.page_no
         return response
@@ -251,7 +259,7 @@ class RequestBuilder {
     }
 
     _build(method) {
-        this._url = this.host + this.path + (this.query ? `?${CustomUrlFetchApp.objectToUrlEncoded(this.query)}` : '')
+        this._url = this.host + (this.path ? this.path : '') + (this.query ? `?${CustomUrlFetchApp.objectToUrlEncoded(this.query)}` : '')
         if (this._params.hasOwnProperty('payload') && !this._params.hasOwnProperty('contentType')) {
             this
                 .withContentType('application/x-www-form-urlencoded')

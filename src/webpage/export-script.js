@@ -6,13 +6,13 @@ function onFormSubmit(event) {
     event.preventDefault()
     isExportCanceled = false
     let formDataObject = fromFormDataToObject(new FormData(event.target))
-    if (formDataObject.username.length == 0) {
+    if (formDataObject.text.length == 0) {
         return
     }
     showProgressModal(STATUS.starting)
 
     getBiglist({
-        args: { pagename: formDataObject.pagename, username: formDataObject.username, includeColumns: formDataObject.includeColumns },
+        args: { pagename: formDataObject.pagename, text: formDataObject.text, includeColumns: formDataObject.includeColumns },
         formData: formDataObject,
     })
 }
@@ -87,7 +87,7 @@ function download(filename, mimeType, content) {
 
 function createFilename(formData) {
     let fileExtention = formData.fileExtention.split('_')[0]
-    return `livelib-${formData.username.toLowerCase()}-${formData.pagename}-${new Date().toLocaleDateString()}.${fileExtention}`
+    return `livelib-${formData.text.toLowerCase()}-${formData.pagename}-${new Date().toLocaleDateString()}.${fileExtention}`
 }
 
 function fromFormDataToObject(formData) {
