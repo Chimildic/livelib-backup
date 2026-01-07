@@ -2,6 +2,39 @@ let isExportCanceled = false
 document.getElementById('cancelExportButton').addEventListener('click', () => (isExportCanceled = true))
 document.querySelector('form').addEventListener('submit', onFormSubmit)
 
+function convertToGoodreadsDateFormat(russianDate) {
+    const monthMap = {
+        'январь': '01',
+        'февраль': '02',
+        'март': '03',
+        'апрель': '04',
+        'май': '05',
+        'июнь': '06',
+        'июль': '07',
+        'август': '08',
+        'сентябрь': '09',
+        'октябрь': '10',
+        'ноябрь': '11',
+        'декабрь': '12'
+    }
+    
+    // Parse "Декабрь 2025 г." format (nominative case with capital letter)
+    const match = russianDate.match(/(\S+)\s+(\d{4})\s*г?\.?/i)
+    if (!match) {
+        return russianDate // Return original if format not recognized
+    }
+    
+    const monthName = match[1].toLowerCase()
+    const year = match[2]
+    
+    const month = monthMap[monthName]
+    if (!month) {
+        return russianDate // Return original if month not recognized
+    }
+    
+    return `${year}/${month}/01`
+}
+
 function onFormSubmit(event) {
     event.preventDefault()
     isExportCanceled = false
@@ -109,7 +142,7 @@ function fromBookArrayToCsv(userObject, separator, replacement, isGoodReadsForma
     userObject.bookArray.forEach(book => {
         throwIfCancelByUser()
         getIsbnList(book).forEach(isbn => {
-            let line = userObject.formData.includeColumns.map(column => getColumnValue(book, column, isbn))
+            let line = userObject.formData.includeColumns.map(column => getColumnValue(book, column, isbn, isGoodReadsFormat))
                 .map(value => formatValue(value, separator, replacement))
                 .join(separator)
             lines.push(line)
@@ -134,7 +167,7 @@ function fromBookArrayToCsv(userObject, separator, replacement, isGoodReadsForma
         return list.length == 0 ? [isbnString] : list
     }
 
-    function getColumnValue(book, column, isbn) {
+    function getColumnValue(book, column, isbn, isGoodReadsFormat) {
         switch (column) {
             case 'authors':
                 return book.authors.map(a => a.name).join(',')
@@ -146,6 +179,11 @@ function fromBookArrayToCsv(userObject, separator, replacement, isGoodReadsForma
                 return isbn
             case 'genres':
                 return book.genres.map(item => item.name).join(',')
+            case 'readDate':
+                if (isGoodReadsFormat && book.readDate) {
+                    return convertToGoodreadsDateFormat(book.readDate)
+                }
+                return book.readDate
             case 'statLoved':
             case 'statReviews':
             case 'statQuotes':
